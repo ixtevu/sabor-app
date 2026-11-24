@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sabor_app/models/receitas_mock.dart';
-import 'package:sabor_app/widgets/ReceitaCard.dart';
+import 'package:sabor_app/screens/detalhes_screen.dart';
+import 'package:sabor_app/widgets/receita_card.dart';
 import '../models/receita.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +14,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _termo = '';
   bool _emGrade = false;
+  Future<void> _abrirDetalhe(Receita receita) async {
+    final favoritou = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => DetalheScreen(receita: receita)),
+    );
+
+    if (!mounted) return;
+
+    if (favoritou == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${receita.nome} adicionada aos favoritos ❤')),
+      );
+    }
+  }
 
   void _mostrarResumo(Receita receita) {
     showDialog(
@@ -48,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return ReceitaCard(
           receita: receita,
-          onTap: () {},
+          onTap: () => _abrirDetalhe(receita),
           onLongPress: () => _mostrarResumo(receita),
         );
       },
@@ -71,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Card(
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () {},
+            onTap: () => _abrirDetalhe(receita),
             onLongPress: () => _mostrarResumo(receita),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
